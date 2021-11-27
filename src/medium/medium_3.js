@@ -18,7 +18,9 @@ queries.
  *
  */
 export function searchHighPower(car_data, minHorsepower, minTorque) {
-
+    return car_data.filter(car => {
+        return car.horsepower >= minHorsepower && car.torque >= minTorque;
+    })
 }
 
 
