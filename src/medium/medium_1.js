@@ -9,7 +9,7 @@ import {variance} from "./data/stats_helpers.js";
  */
 export function getSum(array) {
     var sum = 0;
-    array.array.forEach(element => {
+    array.forEach(element => {
         sum+=element;
     });
     return sum;
@@ -55,6 +55,8 @@ export function getMedian(array) {
  }
  */
 export function getStatistics(array) {
-
+    var result = {};
+    result.length = array.length;
+    result.sum = getSum(array)
 }
 

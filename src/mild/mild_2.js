@@ -28,7 +28,7 @@ export function identifyVariable(variable) {
  */
 export function identifyArray(array) {
    var result = []
-   array.array.forEach(element => {
+   array.forEach(element => {
       result.push(identifyVariable(element));
    });
    return result;
