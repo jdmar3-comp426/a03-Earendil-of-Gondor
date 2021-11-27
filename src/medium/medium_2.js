@@ -27,10 +27,7 @@ mpg_data.forEach(car => {
     }
 
     if (typeof avgMpgByYearAndHybrid[car.year] === 'undefined') {
-        avgMpgByYearAndHybrid[car.year] = {};
-    }
-    if (typeof avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey] === 'undefined') {
-        avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey] = { city: [], highway: [] };
+        avgMpgByYearAndHybrid[car.year] = { hybrid: { city: [], highway: [] }, notHybrid: { city: [], highway: [] } };
     }
     avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].city.push(car.city_mpg);
     avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].highway.push(car.highway_mpg);
