@@ -6,12 +6,53 @@ var cityMpgArray = [];
 var highwayMpgArray = [];
 var yearArray = [];
 var hybridNumber = 0;
+var makerHybridObj = {};
+var makerHybridArr = [];
+var avgMpgByYearAndHybrid = {};
 mpg_data.forEach(car => {
     cityMpgArray.push(car.city_mpg);
     highwayMpgArray.push(car.highway_mpg);
     yearArray.push(car.year);
-    car.hybrid && hybridNumber++;
+
+    var avgMpgByYearAndHybridKey = 'notHybrid';
+    if (car.hybrid) {
+        hybridNumber++;
+
+        if (typeof makerHybridObj[car.make] === 'undefined') {
+            makerHybridObj[car.make] = [];
+        } else {
+            makerHybridObj[car.make].push(car.id);
+        }
+
+        avgMpgByYearAndHybridKey = 'hybrid';
+        if (typeof avgMpgByYearAndHybridKey[car.year] === 'undefined') {
+            avgMpgByYearAndHybrid[car.year] = {};
+        } else {
+            if (typeof avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey] === 'undefined') {
+                avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey] = {};
+            } else {
+                avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].city += car.city_mpg;
+                avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].highway += car.highway_mpg;
+            }
+        }
+    }
 });
+
+Object.keys(makerHybridObj).forEach((key, index) => {
+    makerHybridObj[key].sort();
+    makerHybridArr.push({
+        make: key,
+        hybrids: makerHybridObj[key],
+    })
+});
+
+Object.keys(avgMpgByYearAndHybrid).forEach((yearKey, index) => {
+    Object.keys(avgMpgByYearAndHybrid[yearKey]).forEach((hybridKey, index) => {
+        avgMpgByYearAndHybrid[yearKey][hybridKey].city = getSum(avgMpgByYearAndHybrid[yearKey][hybridKey].city) / avgMpgByYearAndHybrid[yearKey][hybridKey].city.length;
+        avgMpgByYearAndHybrid[yearKey][hybridKey].highway = getSum(avgMpgByYearAndHybrid[yearKey][hybridKey].highway) / avgMpgByYearAndHybrid[yearKey][hybridKey].highway.length;
+    })
+})
+
 
 const mpg_data_length = mpg_data.length;
 /*
@@ -97,6 +138,6 @@ export const allCarStats = {
  * }
  */
 export const moreStats = {
-    makerHybrids: undefined,
-    avgMpgByYearAndHybrid: undefined
+    makerHybrids: makerHybridArr,
+    avgMpgByYearAndHybrid: avgMpgByYearAndHybrid
 };
