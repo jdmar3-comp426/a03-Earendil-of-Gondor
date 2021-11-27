@@ -1,6 +1,19 @@
 import mpg_data from "./data/mpg_data.js";
-import {getStatistics} from "./medium_1.js";
+import { getStatistics, getSum } from "./medium_1.js";
 
+
+var cityMpgArray = [];
+var highwayMpgArray = [];
+var yearArray = [];
+var hybridNumber = 0;
+mpg_data.forEach(car => {
+    cityMpgArray.push(car.city_mpg);
+    highwayMpgArray.push(car.highway_mpg);
+    yearArray.push(car.year);
+    car.hybrid && hybridNumber++;
+});
+
+const mpg_data_length = mpg_data.length;
 /*
 This section can be done by using the array prototype functions.
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
@@ -20,9 +33,9 @@ see under the methods section
  * @param {allCarStats.ratioHybrids} ratio of cars that are hybrids
  */
 export const allCarStats = {
-    avgMpg: undefined,
-    allYearStats: undefined,
-    ratioHybrids: undefined,
+    avgMpg: { city: getSum(cityMpgArray) / mpg_data_length, highway: getSum(highwayMpgArray) / mpg_data_length },
+    allYearStats: getStatistics(yearArray),
+    ratioHybrids: hybridNumber / mpg_data_length,
 };
 
 
