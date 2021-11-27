@@ -20,22 +20,20 @@ mpg_data.forEach(car => {
 
         if (typeof makerHybridObj[car.make] === 'undefined') {
             makerHybridObj[car.make] = [];
-        } else {
-            makerHybridObj[car.make].push(car.id);
         }
+        makerHybridObj[car.make].push(car.id);
 
         avgMpgByYearAndHybridKey = 'hybrid';
-        if (typeof avgMpgByYearAndHybridKey[car.year] === 'undefined') {
-            avgMpgByYearAndHybrid[car.year] = {};
-        } else {
-            if (typeof avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey] === 'undefined') {
-                avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey] = {};
-            } else {
-                avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].city += car.city_mpg;
-                avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].highway += car.highway_mpg;
-            }
-        }
     }
+
+    if (typeof avgMpgByYearAndHybrid[car.year] === 'undefined') {
+        avgMpgByYearAndHybrid[car.year] = {};
+    }
+    if (typeof avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey] === 'undefined') {
+        avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey] = { city: [], highway: [] };
+    }
+    avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].city.push(car.city_mpg);
+    avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].highway.push(car.highway_mpg);
 });
 
 Object.keys(makerHybridObj).forEach((key, index) => {
@@ -48,8 +46,10 @@ Object.keys(makerHybridObj).forEach((key, index) => {
 
 Object.keys(avgMpgByYearAndHybrid).forEach((yearKey, index) => {
     Object.keys(avgMpgByYearAndHybrid[yearKey]).forEach((hybridKey, index) => {
-        avgMpgByYearAndHybrid[yearKey][hybridKey].city = getSum(avgMpgByYearAndHybrid[yearKey][hybridKey].city) / avgMpgByYearAndHybrid[yearKey][hybridKey].city.length;
-        avgMpgByYearAndHybrid[yearKey][hybridKey].highway = getSum(avgMpgByYearAndHybrid[yearKey][hybridKey].highway) / avgMpgByYearAndHybrid[yearKey][hybridKey].highway.length;
+        const city = getSum(avgMpgByYearAndHybrid[yearKey][hybridKey].city) / avgMpgByYearAndHybrid[yearKey][hybridKey].city.length;
+        const highway = getSum(avgMpgByYearAndHybrid[yearKey][hybridKey].highway) / avgMpgByYearAndHybrid[yearKey][hybridKey].highway.length;
+        avgMpgByYearAndHybrid[yearKey][hybridKey].city = city;
+        avgMpgByYearAndHybrid[yearKey][hybridKey].highway = highway;
     })
 })
 
