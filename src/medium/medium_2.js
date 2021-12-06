@@ -1,6 +1,57 @@
 import mpg_data from "./data/mpg_data.js";
-import {getStatistics} from "./medium_1.js";
+import { getStatistics, getSum } from "./medium_1.js";
 
+
+var cityMpgArray = [];
+var highwayMpgArray = [];
+var yearArray = [];
+var hybridNumber = 0;
+var makerHybridObj = {};
+var makerHybridArr = [];
+var avgMpgByYearAndHybrid = {};
+mpg_data.forEach(car => {
+    cityMpgArray.push(car.city_mpg);
+    highwayMpgArray.push(car.highway_mpg);
+    yearArray.push(car.year);
+
+    var avgMpgByYearAndHybridKey = 'notHybrid';
+    if (car.hybrid) {
+        hybridNumber++;
+
+        if (typeof makerHybridObj[car.make] === 'undefined') {
+            makerHybridObj[car.make] = [];
+        }
+        makerHybridObj[car.make].push(car.id);
+
+        avgMpgByYearAndHybridKey = 'hybrid';
+    }
+
+    if (typeof avgMpgByYearAndHybrid[car.year] === 'undefined') {
+        avgMpgByYearAndHybrid[car.year] = { hybrid: { city: [], highway: [] }, notHybrid: { city: [], highway: [] } };
+    }
+    avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].city.push(car.city_mpg);
+    avgMpgByYearAndHybrid[car.year][avgMpgByYearAndHybridKey].highway.push(car.highway_mpg);
+});
+
+Object.keys(makerHybridObj).forEach((key, index) => {
+    makerHybridObj[key].sort();
+    makerHybridArr.push({
+        make: key,
+        hybrids: makerHybridObj[key],
+    })
+});
+
+Object.keys(avgMpgByYearAndHybrid).forEach((yearKey, index) => {
+    Object.keys(avgMpgByYearAndHybrid[yearKey]).forEach((hybridKey, index) => {
+        const city = getSum(avgMpgByYearAndHybrid[yearKey][hybridKey].city) / avgMpgByYearAndHybrid[yearKey][hybridKey].city.length;
+        const highway = getSum(avgMpgByYearAndHybrid[yearKey][hybridKey].highway) / avgMpgByYearAndHybrid[yearKey][hybridKey].highway.length;
+        avgMpgByYearAndHybrid[yearKey][hybridKey].city = city;
+        avgMpgByYearAndHybrid[yearKey][hybridKey].highway = highway;
+    })
+})
+
+
+const mpg_data_length = mpg_data.length;
 /*
 This section can be done by using the array prototype functions.
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
@@ -20,9 +71,9 @@ see under the methods section
  * @param {allCarStats.ratioHybrids} ratio of cars that are hybrids
  */
 export const allCarStats = {
-    avgMpg: undefined,
-    allYearStats: undefined,
-    ratioHybrids: undefined,
+    avgMpg: { city: getSum(cityMpgArray) / mpg_data_length, highway: getSum(highwayMpgArray) / mpg_data_length },
+    allYearStats: getStatistics(yearArray),
+    ratioHybrids: hybridNumber / mpg_data_length,
 };
 
 
@@ -84,6 +135,6 @@ export const allCarStats = {
  * }
  */
 export const moreStats = {
-    makerHybrids: undefined,
-    avgMpgByYearAndHybrid: undefined
+    makerHybrids: makerHybridArr,
+    avgMpgByYearAndHybrid: avgMpgByYearAndHybrid
 };
